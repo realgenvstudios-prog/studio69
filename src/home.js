@@ -15,6 +15,8 @@ initNav();
 initReveals();
 const lenisReady = initLenis();
 
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 const loader = document.getElementById("loader");
@@ -78,6 +80,7 @@ function heroScroll() {
   const heroMask = document.getElementById("heroMask");
   const heroCta = document.querySelector(".hero-cta");
   const scrollCue = document.querySelector(".hero-block .scroll-cue");
+  const mobile = window.matchMedia("(max-width: 820px)");
 
   ScrollTrigger.create({
     trigger: ".hero-block",
@@ -89,7 +92,12 @@ function heroScroll() {
       const p = self.progress;
       scrollCue.style.opacity = String(clamp01(1 - p * 8));
 
-      const phase = clamp01(p / 0.5);
+      // Phones: a wider starting box (it would otherwise grow into a tall,
+      // thin column), the reveal spread over most of a shorter scroll so
+      // there's no dead stretch, and the buttons only once the image fills
+      // the screen. Desktop keeps its original numbers.
+      const m = mobile.matches;
+      const phase = clamp01(p / (m ? 0.75 : 0.5));
       // MADE / YOUR SPACE ride the box's top and bottom edges off-screen;
       // FOR fades out as the full image takes over.
       const edgeShift = phase * 0.42 * heroMask.clientHeight;
@@ -97,8 +105,9 @@ function heroScroll() {
       lineBot.style.transform = `translateY(${edgeShift}px)`;
       lineMid.style.opacity = String(1 - phase);
       const inset = 42 - phase * 42;
-      heroMask.style.clipPath = `inset(${inset}% ${inset * 0.76}% ${inset}% ${inset * 0.76}% round 2px)`;
-      heroCta.style.opacity = String(clamp01((p - 0.25) / 0.15));
+      const insetX = inset * (m ? 18 / 42 : 0.76);
+      heroMask.style.clipPath = `inset(${inset}% ${insetX}% ${inset}% ${insetX}% round 2px)`;
+      heroCta.style.opacity = String(m ? clamp01((p - 0.72) / 0.14) : clamp01((p - 0.25) / 0.15));
     },
   });
 }
