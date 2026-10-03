@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+
+# Source footage and pre-compression image backups — not used by the site
+/*.mp4
+/image-originals/
